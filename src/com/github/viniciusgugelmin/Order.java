@@ -20,16 +20,16 @@ public class Order {
 		return name;
 	}
 	//
-	public Item getFoods(int index) {
-		return foods.get(index);
+	public List<Item> getFoods() {
+		return foods;
 	}
 	//
-	public Item getDrinks(int index) {
-		return drinks.get(index);
+	public List<Item> getDrinks() {
+		return drinks;
 	}
 	//
-	public Item getWines(int index) {
-		return wines.get(index);
+	public List<Item> getWines() {
+		return wines;
 	}
 	
 	/* Setters */

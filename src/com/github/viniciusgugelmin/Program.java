@@ -49,7 +49,10 @@ public class Program {
 			/* Order ID generator */
 			//
 			long orderId = 1;
-			boolean orderExists = false;;
+			boolean orderExists = false;
+			//
+			FileWriter writeOrder = new FileWriter("D:\\www\\restaurants-menu-up\\files\\orders\\draft.txt");
+			PrintWriter printOrder = new PrintWriter(writeOrder);
 			//
 			do {
 				File fileOrder = new File("D:\\www\\restaurants-menu-up\\files\\orders\\" + orderId + ".txt");
@@ -58,8 +61,8 @@ public class Program {
 					orderId++;
 					orderExists = true;
 				} else {
-					FileWriter writeOrder = new FileWriter("D:\\www\\restaurants-menu-up\\files\\orders\\" + orderId + ".txt");
-					PrintWriter printOrder = new PrintWriter(writeOrder);
+					writeOrder = new FileWriter("D:\\www\\restaurants-menu-up\\files\\orders\\" + orderId + ".txt");
+					printOrder = new PrintWriter(writeOrder);
 					orderExists = false;
 				}
 			} while (orderExists);
@@ -70,7 +73,6 @@ public class Program {
 			String name = in.nextLine();
 			//
 			Order order = new Order();
-			order.setName(name);
 			
 			/* Showing foods */
 			//
@@ -101,33 +103,83 @@ public class Program {
 			/* Requesting food*/
 			//
 			String moreFood = "yes";
-			System.out.println(order.getName() + ", what do you want do eat? [ANS: 'item's number']");
+			System.out.println("What do you want do eat? [ANS: 'item's number']");
+			//
+			int foodId = 0;
 			//
 			do {
-				int id = 0;
-				
 				do {
-					id = in.nextInt();
+					foodId = in.nextInt();
 					
-					if (id >= foodList.size() || id < 0) 
+					if (foodId >= foodList.size() || foodId < 0) 
 						System.out.println("ERROR: Invalid number. [MUST BE: greater than 0 or less/equal than " + (foodList.size() - 1));
 					
-				} while (id >= foodList.size() || id < 0);
+				} while (foodId >= foodList.size() || foodId < 0);
 				
-				foodList.get(id).getName();
+				Item foodSelected = foodList.get(foodId);
+				Item food = new Item();
+				
+				System.out.println("How many servings?");
+				int servings = 0;
+				
+				do {
+					servings = in.nextInt();
+					
+					if (servings <= 0) 
+						System.out.println("ERROR: Invalid number. [MUST BE: greater than 0]");
+					
+				} while (servings <= 0);
+				
+				System.out.println("Any notes?");
+				in.nextLine();
+				String note = in.nextLine();
+				
+				food.setName(foodSelected.getName());
+				food.setPrice(foodSelected.getPrice());
+				food.setQuantity(servings);
+				food.setNote(note);
+				
+				order.setFoods(food);
 				
 				System.out.println("Anything else to eat? [ANS: yes OR no]");
-				in.nextLine();
 				moreFood = in.nextLine();
 				
 				if (!moreFood.equals("yes") && !moreFood.equals("no")) 
 					System.out.println("ERROR: Invalid option. [MUST BE: yes OR no]");
 				
 				if (moreFood.equals("yes"))
-						System.out.println(order.getName() + ", what do you want do eat? [ANS: 'item's number']");
+						System.out.println("What do you want do eat? [ANS: 'item's number']");
 				
 			} while (moreFood.equals("yes"));
 			
+			/* Setters */ 
+			//
+			order.setId(orderId);
+			order.setName(name);
+			//
+			printOrder.println("Order's ID: " + order.getId());
+			printOrder.println("Customer's name: " + order.getName());
+			//
+			Double bill = 0.0;
+			//
+			printOrder.println("Foods:");
+			for (Item food : order.getFoods()) {
+				printOrder.print(" - ");
+				printOrder.print(food.getName());
+				printOrder.print(" - R$" + food.getPrice());
+				printOrder.print(" - " + food.getQuantity());
+				printOrder.print(" - " + food.getNote() + "\n");
+				
+				bill += food.getPrice() * food.getQuantity();
+			}
+			//
+			printOrder.println("Bill: R$" + bill);
+			
+			writeOrder.close();
+			printOrder.close();
+			
+			System.out.println("Thanks for choosing us!");
+			System.out.println("Se you later!");
 		} else {
 			
 		} 
