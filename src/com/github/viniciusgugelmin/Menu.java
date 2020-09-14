@@ -1,5 +1,7 @@
 package com.github.viniciusgugelmin;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -118,5 +120,49 @@ public class Menu {
 				
 			} while (moreItem.equals("yes"));
 		}
+	}
+	
+	public static void addItem(Scanner in, List<Item> itemList, String i) {
+		
+		System.out.print("Number of " + i + "s to add: ");
+		int num = in.nextInt();
+		
+		for (int count = 1; count <= num; count++) {
+			Item item = new Item();
+			
+			System.out.println("New " + i);
+			
+			System.out.println("Name: ");
+			in.nextLine();
+			item.setName(in.nextLine());
+			
+			System.out.println("Price: ");
+			item.setPrice(in.nextDouble());
+
+			itemList.add(item);
+		}
+	}
+	
+	public static void printItem(List<Item> itemList, String i, String src) throws IOException {
+		
+		PrintWriter printFile = Files.printFile(src);
+		
+		if (i.equals("food")) {
+			printFile.println("PRATO;PRECO");
+		} else if (i.equals("drink")) {
+			printFile.println("PRECO\tBEBIDA");
+		} else {
+			printFile.println("PRECO\tVINHO");
+		}
+		
+		for (Item item : itemList) {
+			if (i.equals("food")) {
+				printFile.println(item.getName() + ";" + item.getPrice());
+			} else {
+				printFile.println(item.getPrice() + "\t" + item.getName());
+			}
+		}
+		
+		printFile.close();
 	}
 }
