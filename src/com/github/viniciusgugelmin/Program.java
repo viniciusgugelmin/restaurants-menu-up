@@ -140,16 +140,14 @@ public class Program {
 					itemList.add(item);
 				}
 				
-				PrintWriter printItem = Files.printFile("D:\\www\\restaurants-menu-up\\files\\draft\\draft.txt");
-
-				printItem.println("PRATO;PRECO");
-				
 				break;
 			case 2:
 				break;
 			case 3:
 				break;
 			}
+			
+			inFile.close();
 		} 
 		
 		System.out.println("fim");
@@ -204,15 +202,17 @@ public class Program {
 			list = order.getWines();
 		}
 		//
-		printOrder.println(itemType + ":");
-		for (Item item : list) {
-			printOrder.print(" - ");
-			printOrder.print(item.getName());
-			printOrder.print(" - $" + item.getPrice());
-			printOrder.print(" - " + item.getQuantity());
-			printOrder.print(" - " + item.getNote() + "\n");
-			
-			bill += (item.getPrice() * item.getQuantity());
+		if (list.size() > 0) {
+			printOrder.println(itemType + ":");
+			for (Item item : list) {
+				printOrder.print(" - ");
+				printOrder.print(item.getName());
+				printOrder.print(" - $" + item.getPrice());
+				printOrder.print(" - " + item.getQuantity());
+				printOrder.print(" - " + item.getNote() + "\n");
+				
+				bill += (item.getPrice() * item.getQuantity());
+			}
 		}
 		//
 		return bill;
