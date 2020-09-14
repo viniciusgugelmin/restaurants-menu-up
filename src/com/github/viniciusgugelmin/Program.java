@@ -15,32 +15,14 @@ public class Program {
 		
 		/* Greetings */
 		//
-		System.out.println("Welcome to 'Positivo restaurant'...");
-		System.out.println("Wanna take a sit? Or are you going to work today? [ANS: sit OR work]");
-		//
-		Scanner in = new Scanner(System.in);
-		String toDoOpt = "";
-		//
-		do {
-			toDoOpt = in.nextLine().toLowerCase();
-			
-			if (!toDoOpt.equals("sit") && !toDoOpt.equals("work")) 
-				System.out.println("ERROR: Invalid option. [MUST BE: sit OR work]");
-			
-		} while (!toDoOpt.equals("sit") && !toDoOpt.equals("work"));
-		//
-		System.out.println("");
+		Scanner in = getIn();
+		String toDoOpt = getToDoOpt(in);
 		
-		/* Files reader */
+		/* File reader */
 		//
-		File fileFoods = new File("D:\\www\\restaurants-menu-up\\files\\menu\\foods.txt");
-		Scanner inFoods = new Scanner(fileFoods);
-		//
-		File fileDrinks = new File("D:\\www\\restaurants-menu-up\\files\\menu\\drinks.txt");
-		Scanner inDrinks = new Scanner(fileDrinks);
-		//
-		File fileWines = new File("D:\\www\\restaurants-menu-up\\files\\menu\\wines.txt");
-		Scanner inWines = new Scanner(fileWines);
+		Scanner inFoods = Files.readFile("D:\\www\\restaurants-menu-up\\files\\menu\\foods.txt");
+		Scanner inDrinks = Files.readFile("D:\\www\\restaurants-menu-up\\files\\menu\\drinks.txt");
+		Scanner inWines = Files.readFile("D:\\www\\restaurants-menu-up\\files\\menu\\wines.txt");
 		
 		/* To do */
 		//
@@ -51,8 +33,7 @@ public class Program {
 			long orderId = 1;
 			boolean orderExists = false;
 			//
-			FileWriter writeOrder = new FileWriter("D:\\www\\restaurants-menu-up\\files\\orders\\draft.txt");
-			PrintWriter printOrder = new PrintWriter(writeOrder);
+			PrintWriter printOrder = Files.printFile("D:\\www\\restaurants-menu-up\\files\\draft\\draft.txt");
 			//
 			do {
 				File fileOrder = new File("D:\\www\\restaurants-menu-up\\files\\orders\\" + orderId + ".txt");
@@ -61,96 +42,35 @@ public class Program {
 					orderId++;
 					orderExists = true;
 				} else {
-					writeOrder = new FileWriter("D:\\www\\restaurants-menu-up\\files\\orders\\" + orderId + ".txt");
-					printOrder = new PrintWriter(writeOrder);
+					printOrder = Files.printFile("D:\\www\\restaurants-menu-up\\files\\orders\\" + orderId + ".txt");
 					orderExists = false;
 				}
 			} while (orderExists);
 
 			/* Writting order */
 			//
+			Order order = new Order();
+			//
 			System.out.println("May I know your name?");
 			String name = in.nextLine();
-			//
-			Order order = new Order();
 			
-			/* Showing foods */
+			/* Foods */
 			//
-			List<Item> foodList = new ArrayList<>();
+			List<Item> foodList = Menu.getItems(inFoods, ";");
 			//
-			System.out.println("");
-			System.out.println("Here it is our menu...");
-			inFoods.nextLine();
-			//
-			int cont = 0;
-			//
-			while (inFoods.hasNext()) {
-				String line = inFoods.nextLine();
-				String[] i = line.split(";");
-				
-				Item food = new Item();
-				food.setName(i[0]);
-				food.setPrice(Double.parseDouble(i[1].replaceAll(",", ".")));
-				
-				foodList.add(food);
-				System.out.println(cont + ";" + line);
-				
-				cont++;
-			}
-			//
-			System.out.println("");
+			Menu.getOrder(in, order, foodList, "eat", false);
 			
-			/* Requesting food*/
+			/* Drinks */
 			//
-			String moreFood = "yes";
-			System.out.println("What do you want do eat? [ANS: 'item's number']");
+			List<Item> drinkList = Menu.getItems(inDrinks, "\t");
 			//
-			int foodId = 0;
+			Menu.getOrder(in, order, drinkList, "drink", false);
+			
+			/* Wines */
 			//
-			do {
-				do {
-					foodId = in.nextInt();
-					
-					if (foodId >= foodList.size() || foodId < 0) 
-						System.out.println("ERROR: Invalid number. [MUST BE: greater than 0 or less/equal than " + (foodList.size() - 1));
-					
-				} while (foodId >= foodList.size() || foodId < 0);
-				
-				Item foodSelected = foodList.get(foodId);
-				Item food = new Item();
-				
-				System.out.println("How many servings?");
-				int servings = 0;
-				
-				do {
-					servings = in.nextInt();
-					
-					if (servings <= 0) 
-						System.out.println("ERROR: Invalid number. [MUST BE: greater than 0]");
-					
-				} while (servings <= 0);
-				
-				System.out.println("Any notes?");
-				in.nextLine();
-				String note = in.nextLine();
-				
-				food.setName(foodSelected.getName());
-				food.setPrice(foodSelected.getPrice());
-				food.setQuantity(servings);
-				food.setNote(note);
-				
-				order.setFoods(food);
-				
-				System.out.println("Anything else to eat? [ANS: yes OR no]");
-				moreFood = in.nextLine();
-				
-				if (!moreFood.equals("yes") && !moreFood.equals("no")) 
-					System.out.println("ERROR: Invalid option. [MUST BE: yes OR no]");
-				
-				if (moreFood.equals("yes"))
-						System.out.println("What do you want do eat? [ANS: 'item's number']");
-				
-			} while (moreFood.equals("yes"));
+			List<Item> wineList = Menu.getItems(inWines, "\t");
+			//
+			Menu.getOrder(in, order, wineList, "drink", true);
 			
 			/* Setters */ 
 			//
@@ -162,26 +82,158 @@ public class Program {
 			//
 			Double bill = 0.0;
 			//
-			printOrder.println("Foods:");
-			for (Item food : order.getFoods()) {
-				printOrder.print(" - ");
-				printOrder.print(food.getName());
-				printOrder.print(" - R$" + food.getPrice());
-				printOrder.print(" - " + food.getQuantity());
-				printOrder.print(" - " + food.getNote() + "\n");
-				
-				bill += food.getPrice() * food.getQuantity();
-			}
+			bill = printItem(printOrder, order, bill, "Foods");
+			bill = printItem(printOrder, order, bill, "Drinks");
+			bill = printItem(printOrder, order, bill, "Wines");
 			//
-			printOrder.println("Bill: R$" + bill);
-			
-			writeOrder.close();
+			printOrder.println("Bill: $" + bill);
+			//
 			printOrder.close();
 			
 			System.out.println("Thanks for choosing us!");
-			System.out.println("Se you later!");
+			System.out.println("Your bill: $" + bill);
+			System.out.println("See you later!");
 		} else {
 			
+			/* Request enployee ID */
+			//
+			getEmployeeId(in);
+			
+			/* Enployee's options */
+			//
+			System.out.println("Options: [1-ADD FOOD; 2-ADD DRINK; 3-ADD WINE]");
+			int addOpt = 0;
+			//
+			do {
+				addOpt = in.nextInt();
+				
+				if (addOpt < 1 || addOpt > 3)
+					System.out.println("ERROR: Invalid option. [MUST BE: 1, 2 or 3]");
+				
+			} while (addOpt < 1 || addOpt > 3);
+
+			/* Add Options */
+			//
+			Scanner inFile = Files.readFile("D:\\www\\restaurants-menu-up\\files\\draft\\draft.txt");
+			//
+			switch (addOpt) {
+			case 1:
+				inFile = Files.readFile("D:\\www\\restaurants-menu-up\\files\\menu\\foods.txt");
+				
+				List<Item> itemList = Menu.getItems(inFile, ";");
+				
+				System.out.print("Number of foods to add: ");
+				int num = in.nextInt();
+				
+				for (int count = 1; count <= num; count++) {
+					Item item = new Item();
+					
+					System.out.println("New food");
+					
+					System.out.println("Name: ");
+					in.nextLine();
+					item.setName(in.nextLine());
+					
+					System.out.println("Price: ");
+					item.setPrice(in.nextDouble());
+	
+					itemList.add(item);
+				}
+				
+				PrintWriter printItem = Files.printFile("D:\\www\\restaurants-menu-up\\files\\draft\\draft.txt");
+
+				printItem.println("PRATO;PRECO");
+				
+				break;
+			case 2:
+				break;
+			case 3:
+				break;
+			}
 		} 
+		
+		System.out.println("fim");
+		in.close();
+		inFoods.close();
+		inDrinks.close();
+		inWines.close();
+	}
+
+	private static Scanner getIn() {
+
+		/* Greetings */
+		//
+		System.out.println("Welcome to 'Positivo restaurant'...");
+		System.out.println("Wanna take a sit? Or are you going to work today? [ANS: sit OR work]");
+		//
+		Scanner in = new Scanner(System.in);
+		//
+		return in;
+	}
+	
+	private static String getToDoOpt(Scanner in) {
+		
+		/* Validate choice/option */
+		//
+		String toDoOpt = "";
+		//
+		do {
+			toDoOpt = in.nextLine().toLowerCase();
+			
+			if (!toDoOpt.equals("sit") && !toDoOpt.equals("work")) 
+				System.out.println("ERROR: Invalid option. [MUST BE: sit OR work]");
+			
+		} while (!toDoOpt.equals("sit") && !toDoOpt.equals("work"));
+		//
+		System.out.println("");
+		//
+		return toDoOpt;
+	}
+	
+	private static Double printItem(PrintWriter printOrder, Order order, Double bill, String itemType) {
+
+		/* Print items and bill */
+		//
+		List<Item> list = new ArrayList<>();
+		//
+		if (itemType.equals("Foods")) {
+			list = order.getFoods();
+		} else if (itemType.equals("Drinks")) {
+			list = order.getDrinks();
+		} else if (itemType.equals("Wines")) {
+			list = order.getWines();
+		}
+		//
+		printOrder.println(itemType + ":");
+		for (Item item : list) {
+			printOrder.print(" - ");
+			printOrder.print(item.getName());
+			printOrder.print(" - $" + item.getPrice());
+			printOrder.print(" - " + item.getQuantity());
+			printOrder.print(" - " + item.getNote() + "\n");
+			
+			bill += (item.getPrice() * item.getQuantity());
+		}
+		//
+		return bill;
+	}
+	
+	private static void getEmployeeId(Scanner in) {
+		
+		/* Request enployee ID */
+		//
+		System.out.print("Type your ID as enployee to login: ");
+		int id = 0;
+		boolean enployeeExists = false;
+		//
+		do {
+			id = in.nextInt();
+			
+			File enployee = new File("D:\\www\\restaurants-menu-up\\files\\enployees\\" + id + ".txt");
+			enployeeExists = enployee.exists() ? true : false;
+			
+			System.out.println(enployee.exists() ? "Welcome to Positivo's System" : "ERROR: Invalid ID");
+			
+		} while (!enployeeExists);
 	}
 }
