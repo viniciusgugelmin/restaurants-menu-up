@@ -8,9 +8,19 @@ import java.util.Scanner;
 
 public class Menu {
 	
-	public static List<Item> getItems(Scanner inItems, String split) {
+	private static List<Item> foods;
+	private static List<Item> drinks;
+	private static List<Item> wines;
+	
+	static {
+		foods = new ArrayList<Item>();
+		drinks = new ArrayList<Item>();
+		wines = new ArrayList<Item>();
+	}
+	
+	public static List<Item> getAll(Scanner inItems, String split) {
 		
-		/* Showing foods */
+		/* Showing items of menu */
 		//
 		List<Item> list = new ArrayList<>();
 		//
@@ -44,86 +54,11 @@ public class Menu {
 		System.out.println("");
 		return list;
 	}
-
-	public static void getOrder(Scanner in, Order order, List<Item> itemList, String opt, Boolean especial) {
-		
-		/* Requesting order*/
-		//
-		System.out.println("Would you like something to " + opt + "? [ANS: yes OR no]");
-		String toDo = "";
-		//
-		do {
-			toDo = in.nextLine().toLowerCase();
-			
-			if (!toDo.equals("yes") && !toDo.equals("no")) 
-				System.out.println("ERROR: Invalid option. [MUST BE: yes OR no]");
-			
-		} while (!toDo.equals("yes") && !toDo.equals("no"));
-		//
-		System.out.println("");
-		//
-		if (toDo.equals("yes")) {
-			String moreItem = "yes";
-			//
-			System.out.println("What do you want to " + opt +"? [ANS: 'item's number']");
-			//
-			int itemId = 0;
-			//
-			do {
-				do {
-					itemId = in.nextInt();
-					
-					if (itemId >= itemList.size() || itemId < 0) 
-						System.out.println("ERROR: Invalid number. [MUST BE: greater than 0 or less/equal than " + (itemList.size() - 1));
-					
-				} while (itemId >= itemList.size() || itemId < 0);
-				
-				Item itemSelected = itemList.get(itemId);
-				Item item = new Item();
-				
-				System.out.println("How many servings?");
-				int servings = 0;
-				
-				do {
-					servings = in.nextInt();
-					
-					if (servings <= 0) 
-						System.out.println("ERROR: Invalid number. [MUST BE: greater than 0]");
-					
-				} while (servings <= 0);
-				
-				System.out.println("Any notes? [BLANK NOTE: '...']");
-				in.nextLine();
-				String note = in.nextLine();
-				
-				item.setName(itemSelected.getName());
-				item.setPrice(itemSelected.getPrice());
-				item.setQuantity(servings);
-				item.setNote(note);
-				
-				if (opt.equals("eat")) {
-					order.setFoods(item);
-				} else if (opt.equals("drink") && !especial) {
-					order.setDrinks(item);
-				} else if (opt.equals("drink") && especial) {
-					order.setWines(item);
-				}
-				
-				System.out.println("Anything else to " + opt + "? [ANS: yes OR no]");
-				moreItem = in.nextLine();
-				
-				if (!moreItem.equals("yes") && !moreItem.equals("no")) 
-					System.out.println("ERROR: Invalid option. [MUST BE: yes OR no]");
-				
-				if (moreItem.equals("yes"))
-						System.out.println("What do you want to " + opt + "? [ANS: 'item's number']");
-				
-			} while (moreItem.equals("yes"));
-		}
-	}
 	
-	public static void addItem(Scanner in, List<Item> itemList, String i) {
+	public static void add(Scanner in, List<Item> itemList, String i, String src) {
 		
+		/* Add to list */
+		//
 		System.out.print("Number of " + i + "s to add: ");
 		int num = in.nextInt();
 		
@@ -141,28 +76,32 @@ public class Menu {
 
 			itemList.add(item);
 		}
-	}
+		
+		/* Print in file */
+		//
+		try {
+			PrintWriter printFile = Files.toPrint(src);
 	
-	public static void printItem(List<Item> itemList, String i, String src) throws IOException {
-		
-		PrintWriter printFile = Files.printFile(src);
-		
-		if (i.equals("food")) {
-			printFile.println("PRATO;PRECO");
-		} else if (i.equals("drink")) {
-			printFile.println("PRECO\tBEBIDA");
-		} else {
-			printFile.println("PRECO\tVINHO");
-		}
-		
-		for (Item item : itemList) {
 			if (i.equals("food")) {
-				printFile.println(item.getName() + ";" + item.getPrice());
+				printFile.println("PRATO;PRECO");
+			} else if (i.equals("drink")) {
+				printFile.println("PRECO\tBEBIDA");
 			} else {
-				printFile.println(item.getPrice() + "\t" + item.getName());
+				printFile.println("PRECO\tVINHO");
 			}
-		}
+			
+			for (Item item : itemList) {
+				if (i.equals("food")) {
+					printFile.println(item.getName() + ";" + item.getPrice());
+				} else {
+					printFile.println(item.getPrice() + "\t" + item.getName());
+				}
+			}
+			
+			printFile.close();
 		
-		printFile.close();
+		} catch (IOException e) {
+			System.out.println("ERROR: Can't read the directory.");
+		}
 	}
 }

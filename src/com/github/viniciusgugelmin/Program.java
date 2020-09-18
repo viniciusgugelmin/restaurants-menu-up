@@ -17,7 +17,7 @@ public class Program {
 		/* Greetings */
 		//
 		System.out.println("Welcome to 'Positivo restaurant'...");
-		System.out.println("Wanna take a sit? Or are you going to work today? [ANS: sit OR work]");
+		System.out.println("Wanna make an order? Or are you going to log into the system? [ANS: order OR system]");
 		//
 		Scanner in = new Scanner(System.in);
 		//
@@ -26,29 +26,29 @@ public class Program {
 		do {
 			toDoOpt = in.nextLine().toLowerCase();
 
-			if (!toDoOpt.equals("sit") && !toDoOpt.equals("work"))
-				System.out.println("ERROR: Invalid option. [MUST BE: sit OR work]");
+			if (!toDoOpt.equals("order") && !toDoOpt.equals("system"))
+				System.out.println("ERROR: Invalid option. [MUST BE: order OR system]");
 
-		} while (!toDoOpt.equals("sit") && !toDoOpt.equals("work"));
+		} while (!toDoOpt.equals("order") && !toDoOpt.equals("system"));
 		//
 		System.out.println("");
 
 		/* File reader */
 		//
-		Scanner inFoods = Files.readFile("D:\\www\\restaurants-menu-up\\files\\menu\\foods.txt");
-		Scanner inDrinks = Files.readFile("D:\\www\\restaurants-menu-up\\files\\menu\\drinks.txt");
-		Scanner inWines = Files.readFile("D:\\www\\restaurants-menu-up\\files\\menu\\wines.txt");
+		Scanner inFoods = Files.toRead("D:\\www\\restaurants-menu-up\\files\\menu\\foods.txt");
+		Scanner inDrinks = Files.toRead("D:\\www\\restaurants-menu-up\\files\\menu\\drinks.txt");
+		Scanner inWines = Files.toRead("D:\\www\\restaurants-menu-up\\files\\menu\\wines.txt");
 
 		/* To do */
 		//
-		if (toDoOpt.equals("sit")) {
+		if (toDoOpt.equals("order")) {
 
 			/* Order ID generator */
 			//
 			long orderId = 1;
 			boolean orderExists = false;
 			//
-			PrintWriter printOrder = Files.printFile("D:\\www\\restaurants-menu-up\\files\\draft\\draft.txt");
+			PrintWriter printOrder = Files.toPrint("D:\\www\\restaurants-menu-up\\files\\draft\\draft.txt");
 			//
 			do {
 				File fileOrder = new File("D:\\www\\restaurants-menu-up\\files\\orders\\" + orderId + ".txt");
@@ -57,7 +57,7 @@ public class Program {
 					orderId++;
 					orderExists = true;
 				} else {
-					printOrder = Files.printFile("D:\\www\\restaurants-menu-up\\files\\orders\\" + orderId + ".txt");
+					printOrder = Files.toPrint("D:\\www\\restaurants-menu-up\\files\\orders\\" + orderId + ".txt");
 					orderExists = false;
 				}
 			} while (orderExists);
@@ -71,21 +71,21 @@ public class Program {
 
 			/* Foods */
 			//
-			List<Item> foodList = Menu.getItems(inFoods, ";");
+			List<Item> foodList = Menu.getAll(inFoods, ";");
 			//
-			Menu.getOrder(in, order, foodList, "eat", false);
+			Order.add(in, order, foodList, "eat", false);
 
 			/* Drinks */
 			//
-			List<Item> drinkList = Menu.getItems(inDrinks, "\t");
+			List<Item> drinkList = Menu.getAll(inDrinks, "\t");
 			//
-			Menu.getOrder(in, order, drinkList, "drink", false);
+			Order.add(in, order, drinkList, "drink", false);
 
 			/* Wines */
 			//
-			List<Item> wineList = Menu.getItems(inWines, "\t");
+			List<Item> wineList = Menu.getAll(inWines, "\t");
 			//
-			Menu.getOrder(in, order, wineList, "drink", true);
+			Order.add(in, order, wineList, "drink", true);
 
 			/* Setters */
 			//
@@ -101,9 +101,9 @@ public class Program {
 			//
 			Double bill = 0.0;
 			//
-			bill = Files.printItem(printOrder, order, bill, "Foods");
-			bill = Files.printItem(printOrder, order, bill, "Drinks");
-			bill = Files.printItem(printOrder, order, bill, "Wines");
+			bill = Item.getAll(printOrder, order, bill, "Foods");
+			bill = Item.getAll(printOrder, order, bill, "Drinks");
+			bill = Item.getAll(printOrder, order, bill, "Wines");
 			//
 			System.out.println("Bill: $" + bill);
 			System.out.println("-----------\n");
@@ -119,38 +119,32 @@ public class Program {
 
 			/* Request enployee ID */
 			//
-			Enployee.getEmployeeId(in);
+			Enployee.getId(in);
 			//
 			boolean logOut = false;
 
 			do {
 				/* Enployee's options */
 				//
-				int addOpt = Enployee.getEnployeesOptions(in);
+				int addOpt = SystemUp.getSystem(in);
 
 				/* Add Options */
 				//
 				switch (addOpt) {
 				case 1:
-					List<Item> foodList = Menu.getItems(inFoods, ";");
+					List<Item> foodList = Menu.getAll(inFoods, ";");
 
-					Menu.addItem(in, foodList, "food");
-
-					Menu.printItem(foodList, "food", "D:\\www\\restaurants-menu-up\\files\\menu\\foods.txt");
+					Menu.add(in, foodList, "food", "D:\\www\\restaurants-menu-up\\files\\menu\\foods.txt");
 					break;
 				case 2:
-					List<Item> drinkList = Menu.getItems(inDrinks, "\t");
+					List<Item> drinkList = Menu.getAll(inDrinks, "\t");
 
-					Menu.addItem(in, drinkList, "drink");
-
-					Menu.printItem(drinkList, "drink", "D:\\www\\restaurants-menu-up\\files\\menu\\drinks.txt");
+					Menu.add(in, drinkList, "drink", "D:\\www\\restaurants-menu-up\\files\\menu\\drinks.txt");
 					break;
 				case 3:
-					List<Item> wineList = Menu.getItems(inWines, "\t");
+					List<Item> wineList = Menu.getAll(inWines, "\t");
 
-					Menu.addItem(in, wineList, "wine");
-
-					Menu.printItem(wineList, "drink", "D:\\www\\restaurants-menu-up\\files\\menu\\wines.txt");
+					Menu.add(in, wineList, "wine", "D:\\www\\restaurants-menu-up\\files\\menu\\wines.txt");
 					break;
 				case 4:
 					logOut = true;
