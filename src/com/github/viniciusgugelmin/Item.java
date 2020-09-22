@@ -10,6 +10,21 @@ public class Item {
 	private int quantity;
 	private String note;
 	
+	// Construct
+	//
+	public Item() {
+		
+	}
+	//
+	public Item(String name, double price) {
+		this.name = name;
+		this.price = price;
+	}
+	//
+	public Item(String name, String price) {
+		this.name = name;
+		this.price = Double.parseDouble(price.replaceAll(",", "."));
+	}
 	
 	/* Getters */
 	//
