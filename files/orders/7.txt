@@ -1,6 +1,0 @@
-Order's ID: 7
-Customer's name: vini
-Foods:
- - Bife de alcatra - $13.5 - 1
- - Almôndega caseira - $9.7 - 2
-Bill: $32.9
