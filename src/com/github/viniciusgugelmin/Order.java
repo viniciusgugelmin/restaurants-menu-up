@@ -1,5 +1,6 @@
 package com.github.viniciusgugelmin;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,6 +11,7 @@ public class Order {
 	private List<Item> foods = new ArrayList<>();
 	private List<Item> drinks = new ArrayList<>();
 	private List<Item> wines = new ArrayList<>();
+	private double bill;
 	
 	/* Getters */
 	//
@@ -31,6 +33,10 @@ public class Order {
 	//
 	public List<Item> getWines() {
 		return wines;
+	}
+	//
+	public double getBill() {
+		return bill;
 	}
 	
 	/* Setters */
@@ -54,10 +60,60 @@ public class Order {
 	public void setWines(Item wine) {
 		this.wines.add(wine);
 	}
+	//
+	public void setBill(double bill) {
+		this.bill = bill;
+	}
 	
-	public static void add(Scanner in, Order order, List<Item> itemList, String opt, Boolean especial) {
+	/* Show */
+	//
+	public static void showGet(Order order) {
+		
+		/* Print order */
+		//
+		System.out.println("\n-----------");
+		System.out.println("Order's ID: " + order.getId());
+		System.out.println("Customer's name: " + order.getName());
+		//
+		System.out.println("Bill: $" + order.getBill());
+		System.out.println("-----------\n");
+	}
+	//
+	public static void showGetOrderItem(List<Item> list, String itemType) {
+		
+		/* Print items and bill */
+		//
+		if (list.size() > 0) {
+			System.out.println(itemType + ":");
+			for (Item item : list) {
+				System.out.print(" - ");
+				System.out.print(item.getName());
+				System.out.print(" - $" + item.getPrice());
+				System.out.print(" - " + item.getQuantity());
+				if (!item.getNote().contentEquals("..."))
+					System.out.print(" - " + item.getNote());
+				
+				System.out.println("");
+			}
+		}
+	}
+	
+	/* Add */
+	//
+	public static void addToList(Scanner in, Order order, List<Item> itemList, String itemType) {
 		
 		/* Requesting order */
+		//
+		itemType = itemType.toLowerCase();
+		String opt = null;
+		//
+		if (itemType.equals("food")) {
+			opt = "eat";
+		} else if (itemType.equals("drink")) {
+			opt = "drink";
+		} else if (itemType.equals("wine")) {
+			opt = "drink";
+		}
 		//
 		System.out.println("Would you like something to " + opt + "? [ANS: yes OR no]");
 		String toDo = "";
@@ -106,16 +162,13 @@ public class Order {
 				in.nextLine();
 				String note = in.nextLine();
 				
-				item.setName(itemSelected.getName());
-				item.setPrice(itemSelected.getPrice());
-				item.setQuantity(servings);
-				item.setNote(note);
+				item = new Item(itemSelected.getName(), itemSelected.getPrice(), servings, note);
 				
-				if (opt.equals("eat")) {
+				if (itemType.equals("food")) {
 					order.setFoods(item);
-				} else if (opt.equals("drink") && !especial) {
+				} else if (itemType.equals("drink")) {
 					order.setDrinks(item);
-				} else if (opt.equals("drink") && especial) {
+				} else if (itemType.equals("wine")) {
 					order.setWines(item);
 				}
 				
@@ -130,5 +183,61 @@ public class Order {
 				
 			} while (moreItem.equals("yes"));
 		}
+	}
+	//
+	public static void addOrderFile(Order order, PrintWriter printOrder) {
+		
+		/* Add to file */
+		//
+		printOrder.println("Order's ID: " + order.getId());
+		printOrder.println("Customer's name: " + order.getName());
+		//
+		Double bill = 0.0;
+		//
+		bill = getOrderItem(printOrder, order, bill, "foods");
+		bill = getOrderItem(printOrder, order, bill, "drinks");
+		bill = getOrderItem(printOrder, order, bill, "wines");
+		//
+		order.setBill(bill);
+		printOrder.println("Bill: $" + bill);
+	}
+	
+	/* Get */
+	//
+	public static Double getOrderItem(PrintWriter printOrder, Order order, Double bill, String itemType) {
+
+		/* Get and print items and bill */
+		//
+		itemType = itemType.toLowerCase();
+		//
+		List<Item> list = new ArrayList<>();
+		//
+		if (itemType.equals("Foods")) {
+			list = order.getFoods();
+		} else if (itemType.equals("Drinks")) {
+			list = order.getDrinks();
+		} else if (itemType.equals("Wines")) {
+			list = order.getWines();
+		}
+		//
+		if (list.size() > 0) {
+			printOrder.println(itemType + ":");
+			for (Item item : list) {
+				printOrder.print(" - ");
+				printOrder.print(item.getName());
+				printOrder.print(" - $" + item.getPrice());
+				printOrder.print(" - " + item.getQuantity());
+				if (!item.getNote().contentEquals("..."))
+					printOrder.print(" - " + item.getNote());
+				
+				printOrder.println("");
+				
+				bill += (item.getPrice() * item.getQuantity());
+			}
+		}
+		//
+		showGetOrderItem(list, itemType);
+		//
+		return bill;
 	}
 }

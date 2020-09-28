@@ -25,6 +25,13 @@ public class Item {
 		this.name = name;
 		this.price = Double.parseDouble(price.replaceAll(",", "."));
 	}
+	//
+	public Item(String name, double price, int quantity, String note) {
+		this.name = name;
+		this.price = price;
+		this.quantity = quantity;
+		this.note = note;
+	}
 	
 	/* Getters */
 	//
@@ -60,48 +67,5 @@ public class Item {
 	//
 	public void setNote(String note) {
 		this.note = note;
-	}
-	
-	public static Double getAll(PrintWriter printOrder, Order order, Double bill, String itemType) {
-
-		/* Get and print items and bill */
-		//
-		List<Item> list = new ArrayList<>();
-		//
-		if (itemType.equals("Foods")) {
-			list = order.getFoods();
-		} else if (itemType.equals("Drinks")) {
-			list = order.getDrinks();
-		} else if (itemType.equals("Wines")) {
-			list = order.getWines();
-		}
-		//
-		if (list.size() > 0) {
-			System.out.println(itemType + ":");
-			printOrder.println(itemType + ":");
-			for (Item item : list) {
-				System.out.print(" - ");
-				System.out.print(item.getName());
-				System.out.print(" - $" + item.getPrice());
-				System.out.print(" - " + item.getQuantity());
-				if (!item.getNote().contentEquals("..."))
-					System.out.print(" - " + item.getNote());
-				
-				System.out.println("");
-
-				printOrder.print(" - ");
-				printOrder.print(item.getName());
-				printOrder.print(" - $" + item.getPrice());
-				printOrder.print(" - " + item.getQuantity());
-				if (!item.getNote().contentEquals("..."))
-					printOrder.print(" - " + item.getNote());
-				
-				printOrder.println("");
-				
-				bill += (item.getPrice() * item.getQuantity());
-			}
-		}
-		//
-		return bill;
 	}
 }

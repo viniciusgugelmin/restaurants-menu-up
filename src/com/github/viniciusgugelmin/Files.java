@@ -16,6 +16,8 @@ public class Files {
 	private static String drinksFile = "D:\\www\\restaurants-menu-up\\files\\menu\\drinks.txt";
 	private static String winesFile = "D:\\www\\restaurants-menu-up\\files\\menu\\wines.txt";
 	
+	private static String orderRoot = "D:\\www\\restaurants-menu-up\\files\\orders\\";
+	
 	private static String foodsSplit = ";";
 	private static String drinksSplit = "\t";
 	private static String winesSplit = "\t";
@@ -81,15 +83,19 @@ public class Files {
 		return winesFile;
 	}
 	//
+	public static String getOrderRoot() {
+		return orderRoot;
+	}
+	//
 	public static String getFoodsSplit() {
-		return draftFile;
+		return foodsSplit;
 	}
 	//
 	public static String getDrinksSplit() {
-		return drinksFile;
+		return drinksSplit;
 	}
 	//
 	public static String getWinesSplit() {
-		return winesFile;
+		return winesSplit;
 	}
 }

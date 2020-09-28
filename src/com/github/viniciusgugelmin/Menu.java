@@ -24,47 +24,13 @@ public class Menu {
 		wines = getFileList("wine");
 	}
 	
-	public static List<Item> getAll(Scanner inItems, String split) {
+	/* Show */
+	//
+	public static void showAdd(Scanner in, List<Item> itemList, String itemType) {
 		
-		/* Showing items of menu */
+		/* Show to add item*/
 		//
-		List<Item> list = new ArrayList<>();
-		//
-		System.out.println("");
-		System.out.println("Here it is our menu...");
-		inItems.nextLine();
-		//
-		int cont = 0;
-		//
-		while (inItems.hasNext()) {
-			String line = inItems.nextLine();
-			String[] i = line.split(split);
-			
-			Item item = new Item();
-			
-			if (split.equals(";")) {
-				item.setName(i[0]);
-				item.setPrice(Double.parseDouble(i[1].replaceAll(",", ".")));
-			} else {
-				item.setPrice(Double.parseDouble(i[0].replaceAll(",", ".")));
-				item.setName(i[1]);
-			}
-			
-			list.add(item);
-			
-			System.out.println(cont + split + line);
-			
-			cont++;
-		}
-		//
-		System.out.println("");
-		return list;
-	}
-	
-	public static void add(Scanner in, List<Item> itemList, String itemType, String src) {
-		
-		/* Add to list */
-		//
+		itemType = itemType.toLowerCase();
 		System.out.print("Number of " + itemType + "s to add: ");
 		int num = in.nextInt();
 		//
@@ -79,35 +45,61 @@ public class Menu {
 			
 			System.out.println("Price: ");
 			item.setPrice(in.nextDouble());
-
-			itemList.add(item);
+			
+			addItemList(item, itemType);
 		}
+	}
+	//
+	public static List<Item> showGet(String itemType) {
 		
-		PrintWriter printFile = Files.toPrint(src, false);
-		
-		for (Item item : itemList) {
+		/* Showing items of menu */
+		//
+		itemType = itemType.toLowerCase();
+		List<Item> list = new ArrayList<>();
+		list = getList(itemType);
+		//
+		System.out.println("");
+		System.out.println("Here it is our menu...");
+		int cont = 0;
+		//
+		for (Item item : list) {
+			
+			String split = null;
+			String line = null;
+			
 			if (itemType.equals("food")) {
-				printFile.println(item.getName() + ";" + item.getPrice());
-			} else {
-				printFile.println(item.getPrice() + "\t" + item.getName());
+				split = Files.getFoodsSplit();
+				line = item.getName() + Files.getFoodsSplit() + item.getPrice();
+			} else if (itemType.equals("drink")) {
+				split = Files.getDrinksSplit();
+				line = item.getPrice() + Files.getDrinksSplit() + item.getName();
+			} else if (itemType.equals("wine")) {
+				split = Files.getWinesSplit();
+				line = item.getPrice() + Files.getWinesSplit() + item.getName();
 			}
+			
+			System.out.println(cont + split + line);
+			cont++;
 		}
+		//
+		System.out.println("");
 		
-		printFile.close();
+		return list;
 	}
 	
 	/* Get */
 	//
-	private static List<Item> getFileList(String itemType) {
+	public static List<Item> getFileList(String itemType) {
 		
+		itemType = itemType.toLowerCase();
 		List<Item> itemList = new ArrayList<>();
 		Scanner items = Files.toRead(Files.getDraftFile());
 		
-		if (itemType.toLowerCase().equals("food")) {
+		if (itemType.equals("food")) {
 			items = Files.toRead(Files.getFoodsFile());
-		} else if (itemType.toLowerCase().equals("drink")) {
+		} else if (itemType.equals("drink")) {
 			items = Files.toRead(Files.getDrinksFile());
-		} else if (itemType.toLowerCase().equals("wine")) {
+		} else if (itemType.equals("wine")) {
 			items = Files.toRead(Files.getWinesFile());
 		}
 
@@ -117,13 +109,13 @@ public class Menu {
 			String line = items.nextLine();
 			Item item = new Item();
 			
-			if (itemType.toLowerCase().equals("food")) {
+			if (itemType.equals("food")) {
 				String[] i = line.split(Files.getFoodsSplit());
 				item = new Item(i[0], i[1]);
-			} else if (itemType.toLowerCase().equals("drink")) {
+			} else if (itemType.equals("drink")) {
 				String[] i = line.split(Files.getWinesSplit());
 				item = new Item(i[1], i[0]);
-			} else if (itemType.toLowerCase().equals("wine")) {
+			} else if (itemType.equals("wine")) {
 				String[] i = line.split(Files.getWinesSplit());
 				item = new Item(i[1], i[0]);
 			}
@@ -138,11 +130,12 @@ public class Menu {
 	//
 	public static List<Item> getList(String itemType) {
 		
-		if (itemType.toLowerCase().equals("food")) {
+		itemType = itemType.toLowerCase();
+		if (itemType.equals("food")) {
 			return foods;
-		} else if (itemType.toLowerCase().equals("drink")) {
+		} else if (itemType.equals("drink")) {
 			return drinks;
-		} else if (itemType.toLowerCase().equals("wine")) {
+		} else if (itemType.equals("wine")) {
 			return wines;
 		}
 		
@@ -153,11 +146,12 @@ public class Menu {
 	//
 	public static void addItemList(Item item, String itemType) {
 		
-		if (itemType.toLowerCase().equals("food")) {
+		itemType = itemType.toLowerCase();
+		if (itemType.equals("food")) {
 			foods.add(item);
-		} else if (itemType.toLowerCase().equals("drink")) {
+		} else if (itemType.equals("drink")) {
 			drinks.add(item);
-		} else if (itemType.toLowerCase().equals("wine")) {
+		} else if (itemType.equals("wine")) {
 			wines.add(item);
 		}
 		
@@ -166,15 +160,16 @@ public class Menu {
 	//
 	private static void addItemFile(Item item, String itemType) {
 		
+		itemType = itemType.toLowerCase();
 		PrintWriter printer = Files.toPrint(Files.getDraftFile(), false);
 		
-		if (itemType.toLowerCase().equals("food")) {
+		if (itemType.equals("food")) {
 			printer = Files.toPrint(Files.getFoodsFile(), false);
 			printer.println(item.getName() + Files.getFoodsSplit() + item.getPrice());
-		} else if (itemType.toLowerCase().equals("drink")) {
+		} else if (itemType.equals("drink")) {
 			printer = Files.toPrint(Files.getDrinksFile(), false);
 			printer.println(item.getPrice() + Files.getDrinksSplit() + item.getName());
-		} else if (itemType.toLowerCase().equals("wine")) {
+		} else if (itemType.equals("wine")) {
 			printer = Files.toPrint(Files.getWinesFile(), false);
 			printer.println(item.getPrice() + Files.getWinesSplit() + item.getName());
 		}
@@ -186,13 +181,14 @@ public class Menu {
 	//
 	public static void updateItem(Item item, String itemType) {
 		
+		itemType = itemType.toLowerCase();
 		List <Item> list = new ArrayList<>();
 		
-		if (itemType.toLowerCase().equals("food")) {
+		if (itemType.equals("food")) {
 			list = foods;
-		} else if (itemType.toLowerCase().equals("drink")) {
+		} else if (itemType.equals("drink")) {
 			list = drinks;
-		} else if (itemType.toLowerCase().equals("wine")) {
+		} else if (itemType.equals("wine")) {
 			list = wines;
 		}
 		 
@@ -209,25 +205,26 @@ public class Menu {
 	//
 	private static void updateList(List <Item> list, String itemType) {
 		
+		itemType = itemType.toLowerCase();
 		PrintWriter printer = Files.toPrint(Files.getDraftFile(), true);
 
-		if (itemType.toLowerCase().equals("food")) {
+		if (itemType.equals("food")) {
 			printer = Files.toPrint(Files.getFoodsFile(), true);
 			printer.println("PRATO;PRECO");
-		} else if (itemType.toLowerCase().equals("drink")) {
+		} else if (itemType.equals("drink")) {
 			printer = Files.toPrint(Files.getDrinksFile(), true);
 			printer.println("PRECO\tBEBIDA");
-		} else if (itemType.toLowerCase().equals("wine")) {
+		} else if (itemType.equals("wine")) {
 			printer = Files.toPrint(Files.getWinesFile(), true);
 			printer.println("PRECO\tVINHO");
 		}
 		
 		for (Item item : list) {
-			if (itemType.toLowerCase().equals("food")) {
+			if (itemType.equals("food")) {
 				printer.println(item.getName() + Files.getFoodsSplit() + item.getPrice());
-			} else if (itemType.toLowerCase().equals("drink")) {
+			} else if (itemType.equals("drink")) {
 				printer.println(item.getPrice() + Files.getDrinksSplit() + item.getName());
-			} else if (itemType.toLowerCase().equals("wine")) {
+			} else if (itemType.equals("wine")) {
 				printer.println(item.getPrice() + Files.getWinesSplit() + item.getName());
 			}
 		}
@@ -239,15 +236,16 @@ public class Menu {
 	//
 	public static void remove(Item item, String itemType) {
 		
+		itemType = itemType.toLowerCase();
 		List <Item> list = new ArrayList<>();
 		
-		if (itemType.toLowerCase().equals("food")) {
+		if (itemType.equals("food")) {
 			foods.remove(item);
 			list = foods;
-		} else if (itemType.toLowerCase().equals("drink")) {
+		} else if (itemType.equals("drink")) {
 			drinks.remove(item);
 			list = drinks;
-		} else if (itemType.toLowerCase().equals("wine")) {
+		} else if (itemType.equals("wine")) {
 			wines.remove(item);
 			list = wines;
 		}

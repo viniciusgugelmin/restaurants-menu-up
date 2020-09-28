@@ -33,12 +33,6 @@ public class Program {
 		//
 		System.out.println("");
 
-		/* File reader */
-		//
-		Scanner inFoods = Files.toRead("D:\\www\\restaurants-menu-up\\files\\menu\\foods.txt");
-		Scanner inDrinks = Files.toRead("D:\\www\\restaurants-menu-up\\files\\menu\\drinks.txt");
-		Scanner inWines = Files.toRead("D:\\www\\restaurants-menu-up\\files\\menu\\wines.txt");
-
 		/* To do */
 		//
 		if (toDoOpt.equals("order")) {
@@ -46,74 +40,59 @@ public class Program {
 			/* Order ID generator */
 			//
 			long orderId = 1;
+
 			boolean orderExists = false;
 			//
-			PrintWriter printOrder = Files.toPrint("D:\\www\\restaurants-menu-up\\files\\draft\\draft.txt");
+			PrintWriter printOrder = Files.toPrint(Files.getDraftFile(), true);
 			//
 			do {
-				File fileOrder = new File("D:\\www\\restaurants-menu-up\\files\\orders\\" + orderId + ".txt");
+				String file = (Files.getOrderRoot() + orderId + ".txt");
+				File fileOrder = new File(file);
 
 				if (fileOrder.exists()) {
 					orderId++;
 					orderExists = true;
 				} else {
-					printOrder = Files.toPrint("D:\\www\\restaurants-menu-up\\files\\orders\\" + orderId + ".txt");
+					printOrder = Files.toPrint(file, true);
 					orderExists = false;
 				}
 			} while (orderExists);
+		
 
 			/* Writting order */
 			//
 			Order order = new Order();
+			order.setId(orderId);
 			//
 			System.out.println("May I know your name?");
 			String name = in.nextLine();
+			order.setName(name);
 
 			/* Foods */
 			//
-			List<Item> foodList = Menu.getAll(inFoods, ";");
+			List<Item> foodList = Menu.showGet("food");
 			//
-			Order.add(in, order, foodList, "eat", false);
+			Order.addToList(in, order, foodList, "food");
 
 			/* Drinks */
 			//
-			List<Item> drinkList = Menu.getAll(inDrinks, "\t");
+			List<Item> drinkList = Menu.showGet("drink");
 			//
-			Order.add(in, order, drinkList, "drink", false);
+			Order.addToList(in, order, drinkList, "drink");
 
 			/* Wines */
 			//
-			List<Item> wineList = Menu.getAll(inWines, "\t");
+			List<Item> wineList = Menu.showGet("wine");
 			//
-			Order.add(in, order, wineList, "drink", true);
+			Order.addToList(in, order, wineList, "wine");
 
 			/* Setters */
 			//
-			order.setId(orderId);
-			order.setName(name);
-			//
-			System.out.println("\n-----------");
-			System.out.println("Order's ID: " + order.getId());
-			System.out.println("Customer's name: " + order.getName());
-			//
-			printOrder.println("Order's ID: " + order.getId());
-			printOrder.println("Customer's name: " + order.getName());
-			//
-			Double bill = 0.0;
-			//
-			bill = Item.getAll(printOrder, order, bill, "Foods");
-			bill = Item.getAll(printOrder, order, bill, "Drinks");
-			bill = Item.getAll(printOrder, order, bill, "Wines");
-			//
-			System.out.println("Bill: $" + bill);
-			System.out.println("-----------\n");
-			//
-			printOrder.println("Bill: $" + bill);
-			//
+			Order.addOrderFile(order, printOrder);
+			Order.showGet(order);
 			printOrder.close();
 
 			System.out.println("Thanks for choosing us!");
-			System.out.println("Your bill: $" + bill);
 			System.out.println("See you later!");
 		} else {
 
@@ -130,23 +109,48 @@ public class Program {
 
 				/* Add Options */
 				//
+				List<Item> foodList = Menu.getFileList("food");
+				List<Item> drinkList = Menu.getFileList("drink");
+				List<Item> wineList = Menu.getFileList("wine");
+				//
 				switch (addOpt) {
 				case 1:
-					List<Item> foodList = Menu.getAll(inFoods, ";");
-
-					Menu.add(in, foodList, "food", "D:\\www\\restaurants-menu-up\\files\\menu\\foods.txt");
+					// Add food
+					Menu.showAdd(in, foodList, "food");
 					break;
 				case 2:
-					List<Item> drinkList = Menu.getAll(inDrinks, "\t");
-
-					Menu.add(in, drinkList, "drink", "D:\\www\\restaurants-menu-up\\files\\menu\\drinks.txt");
+					// Add drink
+					Menu.showAdd(in, drinkList, "drink");
 					break;
 				case 3:
-					List<Item> wineList = Menu.getAll(inWines, "\t");
-
-					Menu.add(in, wineList, "wine", "D:\\www\\restaurants-menu-up\\files\\menu\\wines.txt");
+					// Add wine
+					Menu.showAdd(in, wineList, "wine");
 					break;
 				case 4:
+					// Update food
+					Menu.showAdd(in, wineList, "wine");
+					break;
+				case 5:
+					// Update drink
+					Menu.showAdd(in, wineList, "wine");
+					break;
+				case 6:
+					// Update wine
+					Menu.showAdd(in, wineList, "wine");
+					break;
+				case 7:
+					// Delete food
+					Menu.showAdd(in, wineList, "wine");
+					break;
+				case 8:
+					// Delete drink
+					Menu.showAdd(in, wineList, "wine");
+					break;
+				case 9:
+					// Delete wine
+					Menu.showAdd(in, wineList, "wine");
+					break;
+				case 10:
 					logOut = true;
 					System.out.println("Bye!");
 					break;
@@ -155,8 +159,5 @@ public class Program {
 		}
 
 		in.close();
-		inFoods.close();
-		inDrinks.close();
-		inWines.close();
 	}
 }
