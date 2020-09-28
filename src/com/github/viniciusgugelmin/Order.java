@@ -11,7 +11,6 @@ public class Order {
 	private List<Item> foods = new ArrayList<>();
 	private List<Item> drinks = new ArrayList<>();
 	private List<Item> wines = new ArrayList<>();
-	private double bill;
 	
 	/* Getters */
 	//
@@ -33,10 +32,6 @@ public class Order {
 	//
 	public List<Item> getWines() {
 		return wines;
-	}
-	//
-	public double getBill() {
-		return bill;
 	}
 	
 	/* Setters */
@@ -60,22 +55,20 @@ public class Order {
 	public void setWines(Item wine) {
 		this.wines.add(wine);
 	}
-	//
-	public void setBill(double bill) {
-		this.bill = bill;
-	}
 	
 	/* Show */
 	//
-	public static void showGet(Order order) {
+	public static void showGet(Order order, double bill) {
 		
 		/* Print order */
 		//
 		System.out.println("\n-----------");
 		System.out.println("Order's ID: " + order.getId());
 		System.out.println("Customer's name: " + order.getName());
-		//
-		System.out.println("Bill: $" + order.getBill());
+		showGetOrderItem(order.getFoods(), "food");
+		showGetOrderItem(order.getDrinks(), "drink");
+		showGetOrderItem(order.getWines(), "wine");
+		System.out.println("Bill: $" + bill);
 		System.out.println("-----------\n");
 	}
 	//
@@ -185,7 +178,7 @@ public class Order {
 		}
 	}
 	//
-	public static void addOrderFile(Order order, PrintWriter printOrder) {
+	public static double addOrderFile(Order order, PrintWriter printOrder) {
 		
 		/* Add to file */
 		//
@@ -198,8 +191,9 @@ public class Order {
 		bill = getOrderItem(printOrder, order, bill, "drinks");
 		bill = getOrderItem(printOrder, order, bill, "wines");
 		//
-		order.setBill(bill);
 		printOrder.println("Bill: $" + bill);
+		//
+		return bill;
 	}
 	
 	/* Get */
@@ -212,11 +206,11 @@ public class Order {
 		//
 		List<Item> list = new ArrayList<>();
 		//
-		if (itemType.equals("Foods")) {
+		if (itemType.equals("foods")) {
 			list = order.getFoods();
-		} else if (itemType.equals("Drinks")) {
+		} else if (itemType.equals("drinks")) {
 			list = order.getDrinks();
-		} else if (itemType.equals("Wines")) {
+		} else if (itemType.equals("wines")) {
 			list = order.getWines();
 		}
 		//
@@ -235,8 +229,6 @@ public class Order {
 				bill += (item.getPrice() * item.getQuantity());
 			}
 		}
-		//
-		showGetOrderItem(list, itemType);
 		//
 		return bill;
 	}

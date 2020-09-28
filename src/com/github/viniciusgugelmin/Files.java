@@ -40,7 +40,7 @@ public class Files {
 		return inFile;
 	}
 	//
-	public static PrintWriter toPrint(String root, boolean clear) {
+	public static PrintWriter toPrint(String root, boolean clearOff) {
 		
 		/* Read file to print */
 		//
@@ -48,14 +48,14 @@ public class Files {
 		PrintWriter printFile = null;
 		//
 		try {
-			writeFile = new FileWriter("D:\\www\\restaurants-menu-up\\files\\draft\\draft.txt", clear);
+			writeFile = new FileWriter("D:\\www\\restaurants-menu-up\\files\\draft\\draft.txt", clearOff);
 			printFile = new PrintWriter(writeFile);
 		} catch (IOException e1) {
 			System.out.println("ERROR: Can't read the draft file.");
 		}
 		//
 		try {
-			writeFile = new FileWriter(root, clear);
+			writeFile = new FileWriter(root, clearOff);
 			printFile = new PrintWriter(writeFile);
 		} catch (IOException e) {
 

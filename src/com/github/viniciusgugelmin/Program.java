@@ -88,8 +88,8 @@ public class Program {
 
 			/* Setters */
 			//
-			Order.addOrderFile(order, printOrder);
-			Order.showGet(order);
+			double bill = Order.addOrderFile(order, printOrder);
+			Order.showGet(order, bill);
 			printOrder.close();
 
 			System.out.println("Thanks for choosing us!");
@@ -128,27 +128,27 @@ public class Program {
 					break;
 				case 4:
 					// Update food
-					Menu.showAdd(in, wineList, "wine");
+					Menu.showUpdate(in, foodList, "food");
 					break;
 				case 5:
 					// Update drink
-					Menu.showAdd(in, wineList, "wine");
+					Menu.showUpdate(in, drinkList, "drink");
 					break;
 				case 6:
 					// Update wine
-					Menu.showAdd(in, wineList, "wine");
+					Menu.showUpdate(in, wineList, "wine");
 					break;
 				case 7:
 					// Delete food
-					Menu.showAdd(in, wineList, "wine");
+					Menu.showRemove(in, foodList, "food");
 					break;
 				case 8:
 					// Delete drink
-					Menu.showAdd(in, wineList, "wine");
+					Menu.showRemove(in, drinkList, "drink");
 					break;
 				case 9:
 					// Delete wine
-					Menu.showAdd(in, wineList, "wine");
+					Menu.showRemove(in, wineList, "wine");
 					break;
 				case 10:
 					logOut = true;

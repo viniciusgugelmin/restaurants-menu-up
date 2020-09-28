@@ -56,7 +56,7 @@ public class Menu {
 		//
 		itemType = itemType.toLowerCase();
 		List<Item> list = new ArrayList<>();
-		list = getList(itemType);
+		list = getFileList(itemType);
 		//
 		System.out.println("");
 		System.out.println("Here it is our menu...");
@@ -85,6 +85,59 @@ public class Menu {
 		System.out.println("");
 		
 		return list;
+	}
+	//
+	public static void showUpdate(Scanner in, List<Item> itemList, String itemType) {
+		
+		/* Show to update item*/
+		//
+		itemType = itemType.toLowerCase();
+		showGet(itemType);
+		Item item = new Item();
+		//
+		int itemId = 0;
+		//
+		do {
+			System.out.println("What item do you want to update ? [ANS: 'item's number']");
+
+			itemId = in.nextInt();
+			
+			if (itemId >= itemList.size() || itemId < 0) 
+				System.out.println("ERROR: Invalid number. [MUST BE: greater than 0 or less/equal than " + (itemList.size() - 1));
+			
+		} while (itemId >= itemList.size() || itemId < 0);
+		//
+		Item itemSelected = itemList.get(itemId);
+		item.setName(itemSelected.getName());
+		//
+		System.out.println("New price: ");
+		item.setPrice(in.nextDouble());
+		//
+		updateItem(item, itemType);
+	}
+	//
+	public static void showRemove(Scanner in, List<Item> itemList, String itemType) {
+		
+		/* Show to remove item*/
+		//
+		itemType = itemType.toLowerCase();
+		showGet(itemType);
+		//
+		int itemId = 0;
+		//
+		do {
+			System.out.println("What item do you want to remove ? [ANS: 'item's number']");
+
+			itemId = in.nextInt();
+			
+			if (itemId >= itemList.size() || itemId < 0) 
+				System.out.println("ERROR: Invalid number. [MUST BE: greater than 0 or less/equal than " + (itemList.size() - 1));
+			
+		} while (itemId >= itemList.size() || itemId < 0);
+		//
+		Item itemSelected = itemList.get(itemId);
+		//
+		remove(itemId, itemType);
 	}
 	
 	/* Get */
@@ -164,13 +217,13 @@ public class Menu {
 		PrintWriter printer = Files.toPrint(Files.getDraftFile(), false);
 		
 		if (itemType.equals("food")) {
-			printer = Files.toPrint(Files.getFoodsFile(), false);
+			printer = Files.toPrint(Files.getFoodsFile(), true);
 			printer.println(item.getName() + Files.getFoodsSplit() + item.getPrice());
 		} else if (itemType.equals("drink")) {
-			printer = Files.toPrint(Files.getDrinksFile(), false);
+			printer = Files.toPrint(Files.getDrinksFile(), true);
 			printer.println(item.getPrice() + Files.getDrinksSplit() + item.getName());
 		} else if (itemType.equals("wine")) {
-			printer = Files.toPrint(Files.getWinesFile(), false);
+			printer = Files.toPrint(Files.getWinesFile(), true);
 			printer.println(item.getPrice() + Files.getWinesSplit() + item.getName());
 		}
 		
@@ -206,16 +259,16 @@ public class Menu {
 	private static void updateList(List <Item> list, String itemType) {
 		
 		itemType = itemType.toLowerCase();
-		PrintWriter printer = Files.toPrint(Files.getDraftFile(), true);
+		PrintWriter printer = Files.toPrint(Files.getDraftFile(), false);
 
 		if (itemType.equals("food")) {
-			printer = Files.toPrint(Files.getFoodsFile(), true);
+			printer = Files.toPrint(Files.getFoodsFile(), false);
 			printer.println("PRATO;PRECO");
 		} else if (itemType.equals("drink")) {
-			printer = Files.toPrint(Files.getDrinksFile(), true);
+			printer = Files.toPrint(Files.getDrinksFile(), false);
 			printer.println("PRECO\tBEBIDA");
 		} else if (itemType.equals("wine")) {
-			printer = Files.toPrint(Files.getWinesFile(), true);
+			printer = Files.toPrint(Files.getWinesFile(), false);
 			printer.println("PRECO\tVINHO");
 		}
 		
@@ -234,19 +287,19 @@ public class Menu {
 	
 	/* Remove */
 	//
-	public static void remove(Item item, String itemType) {
+	public static void remove(int index, String itemType) {
 		
 		itemType = itemType.toLowerCase();
 		List <Item> list = new ArrayList<>();
 		
 		if (itemType.equals("food")) {
-			foods.remove(item);
+			foods.remove(index);
 			list = foods;
 		} else if (itemType.equals("drink")) {
-			drinks.remove(item);
+			drinks.remove(index);
 			list = drinks;
 		} else if (itemType.equals("wine")) {
-			wines.remove(item);
+			wines.remove(index);
 			list = wines;
 		}
 		
